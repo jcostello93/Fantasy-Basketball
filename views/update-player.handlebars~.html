@@ -1,0 +1,21 @@
+<h1>Update {{player.fname}} {{player.lname}}:</h1>
+<form id="update-player" action="/players" method="post">
+    First name: <input type="text" name="fname" value="{{player.fname}}"><br>
+    Last name: <input type="text" name="lname" value="{{player.lname}}"><br>
+    Team: <select name="team" id="team-selector"> 
+        <option value="">None</option>
+        {{#each teams}}
+        <option value="{{teamId}}">{{name}}</option>
+        {{/each}}
+    </select><br>
+	Position: <select name="pos">
+	<option value="1">G</option>
+	<option value="2">G-F</option>
+	<option value="3">F</option>
+	<option value="4">F-C</option>
+	<option value="5">C</option>
+	</select>
+     Years: <input type="number" name="years" value="{{player.years}}"><br>
+</form>
+<button onclick="updatePlayer({{player.playerId}})">Update</button>
+<script defer>selectTeam({{player.teamId}});</script>

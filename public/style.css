@@ -1,0 +1,64 @@
+table.myTable {
+  border: 1px solid #1C6EA4;
+  background-color: #EEEEEE;
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+table.myTable td, table.myTable th {
+  border: 1px solid #AAAAAA;
+  padding: 3px 2px;
+}
+table.myTable tbody td {
+  font-size: 13px;
+}
+table.myTable tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.myTable thead {
+  background: #1C6EA4;
+
+  border-bottom: 2px solid #444444;
+}
+table.myTable thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #FFFFFF;
+  border-left: 2px solid #D0E4F5;
+}
+table.myTable thead th:first-child {
+  border-left: none;
+}
+
+
+
+#chooseTeams {
+    margin:10px auto;
+    max-width: 400px;
+    padding: 20px 12px 10px 20px;
+
+
+}
+
+select {
+	padding: 3px 10px; 
+	border: 1px solid #979997; 
+}
+
+fieldset {
+    padding: 0px 0px 0px 0px; 
+    border: 0;
+}
+
+body
+{
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+#playerTable {
+
+}
+
+#myDiv {
+    padding: 0px 12px 10px 20px;
+}

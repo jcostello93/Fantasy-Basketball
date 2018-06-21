@@ -1,0 +1,26 @@
+<h3>Add a position:</h3>
+
+<form id="addposition" action="/positions" method="post">
+    Name <input type="text" name="name"><br>
+    <input type="submit" value="Submit">
+</form><br>
+
+<form id="searchposition" action="/positions/search" method="post">
+Search by position: <input type="text" name="searchposition">
+<input type="submit" value="Search">
+</form><br>
+
+<table class="myTable">
+    <thead> 
+        <th>Name</th> 
+    </thead> 
+    <tbody> 
+        {{#each positions}} 
+        <tr> 
+            <td>{{name}}</td> 
+            <td><button onclick="deletePosition({{id}})">Delete</button></td>
+            <td><a href="/positions/{{id}}">Update</a></td>
+        </tr> 
+        {{/each}} 
+    </tbody> 
+</table> 

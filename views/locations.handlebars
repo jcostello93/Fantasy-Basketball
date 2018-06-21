@@ -1,0 +1,39 @@
+<h3>Add a location:</h3>
+
+<form id="addlocation" action="/locations" method="post">
+    City <input type="text" name="city"><br>
+    State: <input type="text" name="state"><br>
+    Population <input type="number" name="population"><br>
+    <input type="submit" value="Submit">  
+</form><br>
+
+<form id="searchlocation" action="/locations/search" method="post">
+    Search by city: <input type="text" name="searchlocation">
+    <input type="submit" value="Search">
+</form>
+
+<form id="sortpopulation" action="/locations/sort" method="post">
+Sort by population
+<input type="submit" value="Sort">
+</form><br>
+
+<table class="myTable">
+    <thead> 
+        <th>City</th> 
+        <th>State</th> 
+        <th>Population</th>
+    </thead> 
+    <tbody> 
+        {{#each locations}} 
+        <tr> 
+            <td>{{city}}</td> 
+            <td>{{state}}</td> 
+            <td>{{population}}</td> 
+            <td><button onclick="deleteLocation({{id}})">Delete</button></td>
+            <td><a href="/locations/{{id}}">Update</a></td>
+        </tr> 
+        {{/each}} 
+    </tbody> 
+</table> 
+
+    

@@ -1,0 +1,5 @@
+<h1>Update {{position.name}}:</h1>
+<form id="update-position" action="/positions" method="post">
+    Name: <input type="text" name="name" value="{{position.name}}"><br>
+</form>
+<button onclick="updatePosition({{position.id}})">Update</button>

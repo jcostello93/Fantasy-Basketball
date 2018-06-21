@@ -1,0 +1,28 @@
+<h3>Add a team:</h3>
+<form id="addteam" action="/teams" method="post">
+    Team name: <input type="text" name="name"><br>
+    Team ID: <input type="number" name="teamId"><br>
+    <input type="submit" value="Submit">
+</form><br>
+
+<form id="searchteam" action="/teams/search" method="post">
+    Search by team name: <input type="text" name="searchteam">
+    <input type="submit" value="Search">
+</form>
+
+<table class="myTable">
+    <thead> 
+        <th>Team Name</th> 
+    </thead> 
+    <tbody> 
+        {{#each teams}} 
+        <tr> 
+            <td>{{name}}</td> 
+            <td><button onclick="deleteTeam({{teamId}})">Delete</button></td>
+            <td><a href="/teams/{{teamId}}">Update</a></td>
+        </tr> 
+        {{/each}} 
+    </tbody> 
+</table> 
+    
+

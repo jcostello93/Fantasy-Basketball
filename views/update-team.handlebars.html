@@ -1,0 +1,7 @@
+<h1>Update {{team.name}}:</h1>
+<form id="update-team" action="/teams" method="post">
+    Team name: <input type="text" name="name" value="{{team.name}}"><br>
+</form>
+<button onclick="updateTeam({{team.teamId}})">Update</button>
+<script defer>selectLocation({{team.location}});</script>
+<script defer>selectCoach({{team.coach}});</script>

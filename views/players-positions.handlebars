@@ -1,0 +1,126 @@
+<h3>Assign a position to a player:</h3>
+
+<form id="addplayer-position" action="/players-positions" method="post">
+<fieldset id="myFieldset">
+Position: <select name="position_id">
+    <option disabled selected value> -- select an option -- </option>
+    {{#each positions}}
+    <option value="{{id}}">{{name}}</option>
+    {{/each}}
+</select><br>
+Team: <select name="team" id="changeteam"> 
+    <option disabled selected value> -- select an option -- </option>
+    {{#each teams}}
+    <option value="{{id}}">{{name}}</option>
+    {{/each}}
+</select><br>
+Player: <select name="player_id" id="changeplayer">
+    <option disabled selected value> -- select an option -- </option>
+</select>
+<input type="submit" value="Submit" id="mySubmit">
+</fieldset>
+</form><br>
+
+<form id="searchplayer" action="/players-positions/search" method="post">
+Search player-position relationship by player last name: <input type="text" name="searchplayer">
+<input type="submit" value="Search">
+</form><br>
+
+<form id="searchposition" action="/players-positions/search" method="post">
+Search player-position relationship by position: <select name="searchposition">
+    <option disabled selected value> -- select an option -- </option>
+    {{#each positions}}
+    <option value="{{id}}">{{name}}</option>
+    {{/each}}
+</select>
+<input type="submit" value="Search">
+</form><br>
+
+<table class="myTable">
+<thead> 
+    <th>First name</th> 
+    <th>Last name</th> 
+    <th>Position</th>
+</thead> 
+<tbody> 
+    {{#each players}} 
+    <tr> 
+        <td>{{fname}}</td> 
+        <td>{{lname}}</td> 
+        <td>{{position_name}}</td> 
+        <td><button onclick="deletePlayerPosition({{pp_id}})">Delete</button></td>
+        <td><a href="/players-positions/{{pp_id}}">Update</a></td>
+    </tr> 
+    {{/each}} 
+</tbody> 
+</table> 
+
+<script type="text/javascript">
+
+    var changeteam = document.getElementById('changeteam');
+    changeteam.addEventListener('change', function(event) {
+
+    var req = new XMLHttpRequest(); 
+
+    var id = changeteam.options[changeteam.selectedIndex].value; 
+
+    var parameters = "id="+id; 
+    req.open("GET", "/change?" + parameters, true);
+    req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    req.addEventListener('load', function() {
+        if (req.status >= 200 && req.status < 400) {
+            var response = JSON.parse(req.responseText);
+            var myFieldset = document.getElementById('myFieldset');
+
+           // var text = document.createTextNode('Player: ');
+            
+            var changeteam = document.getElementById('changeteam');
+
+            console.log(changeteam.parentNode.children.length);
+
+            if (changeteam.parentNode.children.length <= 3) {
+             //   changeteam.parentNode.insertBefore(text, changeteam.nextSibling); 
+            }
+            
+            console.log(changeteam.parentNode.children.length);
+
+
+            if (document.getElementById("mySelect")) {
+                var deleteSelect = document.getElementById("mySelect");
+                deleteSelect.parentNode.removeChild(deleteSelect); 
+            }
+
+            var mySelect = document.getElementById('changeplayer');
+
+            while (mySelect.firstChild) {
+                mySelect.removeChild(mySelect.firstChild); 
+            }
+
+
+            for (var i = 0; i < response.options.length; i++) {
+                var opt = document.createElement('option');
+                opt.value = response.options[i].id; 
+                opt.textContent = response.options[i].fname + " " + response.options[i].lname; 
+                opt.innerHTML = response.options[i].fname + " " + response.options[i].lname; 
+                mySelect.appendChild(opt); 
+            }
+
+            mySelect.setAttribute("name", "player_id");
+            console.log(mySelect.name);
+            console.log(mySelect.value); 
+            var mySubmit = document.getElementById("mySubmit");
+            var myForm = document.getElementById("addplayer-position");
+
+
+
+        }
+        else {
+            console.log('Error in network request:' + request.responseText);
+        }
+    });
+req.send(null); 
+event.preventDefault();     
+    
+
+}); 
+</script>

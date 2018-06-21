@@ -1,0 +1,34 @@
+<h4 style= "margin-bottom: 0em;">Add a fantasy team:</h4>
+
+<form id="addfantasyteam" action="/fantasy-teams" method="post">
+    Name: <input type="text" name="name"><br>
+    League: <select name="league"> 
+    <option value="">None</option>
+    {{#each leagues}}
+    <option value="{{id}}">{{name}}</option>
+    {{/each}}
+</select><br>
+    <input type="submit" value="Submit">
+</form><br>
+
+
+<table class="myTable">
+<thead> 
+    <th>Fantasy team</th> 
+    <th>League</th>
+</thead> 
+<tbody> 
+    {{#each teams}} 
+    <tr> 
+        <td>{{name}}</td> 
+	<td>{{league_name}}</td>
+        <td><button onclick="deleteFantasyTeam({{id}})">Delete</button></td>
+        <td><a href="/fantasy-teams/{{id}}">Manage</a></td>
+    </tr> 
+    {{/each}} 
+</tbody> 
+</table>
+
+
+
+

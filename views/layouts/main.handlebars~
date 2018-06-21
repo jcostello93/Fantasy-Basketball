@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+	<title>CS340 Final Project</title>
+  	<link rel="stylesheet" type="text/css" href="/style.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    {{#each jsscripts}}
+    <script src="/static/{{this}}"></script>
+    {{/each}}
+</head>
+<body>
+<table class="myTable">
+
+    <thead>
+        NBA 2017/2018 Season
+    </thead>
+<tbody>
+    <tr>
+    <td><a href="/players/">Players</a></td>
+    <td><a href="/teams/">Teams</a><br></td>    
+    <td><a href="/leagues/">Leagues</a></td>
+    </tr>
+    <tr>
+    <td><a href="/positions/">Positions</a></td>
+    <td><a href="/fantasy-teams/">Fantasy-teams</a></td>
+    <td><a href="/fantasy-players/">Fantasy-players</a></td>
+    </tr>
+</tbody>
+</table><br>
+
+	{{{body}}}
+</body>
+</html>

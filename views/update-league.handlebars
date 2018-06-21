@@ -1,0 +1,6 @@
+<h4 style= "margin-bottom: 0em;">Update {{league.name}}:</h4>
+<form id="update-league" action="/leagues" method="post">
+    League name: <input type="text" name="name" value="{{league.name}}"><br>
+</form>
+<button onclick="updateLeague({{league.id}})">Update</button>
+<script defer>selectTeam({{league.id}});</script>

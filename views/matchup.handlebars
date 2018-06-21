@@ -1,0 +1,389 @@
+<form id="chooseTeams" action="/matchup" method="post">
+<fieldset id="myFieldset">
+League: <select name="league" id="changeleague">
+	<option disabled selected value> -- select an option -- </option>
+	{{#each leagues}}
+	<option value="{{id}}">{{name}}</option>
+	{{/each}}
+	</select>
+<br>
+Team 1: <select name="team1" id="team1">
+    <option disabled selected value> -- Select a league -- </option>
+</select>
+<br>
+Team 2: <select name="team2" id="team2"> 
+    <option disabled selected value> -- Select a league -- </option>
+</select><br>
+
+<input type="submit" value="Submit" id="mySubmit">
+</fieldset>
+</form><br>
+
+
+<h4 style= "margin-bottom: 0em;">Team 1</h4>
+<table class="myTable">
+<thead> 
+    <th>First name</th> 
+    <th>Last name</th> 
+    <th>Team</th>
+    <th>Position(s)</th>
+    <th>PPG</th>
+    <th>RPG</th>
+    <th>APG</th>
+    <th>SPG</th>	
+    <th>BPG</th>
+    <th>TOPG</th>
+    <th>FPPG</th>
+</thead> 
+<tbody id="table1"> 
+    {{#each team1}} 
+    <tr> 
+	<td style="display:none;">{{playerId}}</td>
+        <td>{{fname}}</td> 
+        <td>{{lname}}</td> 
+        <td>{{team_name}}</td> 
+        <td>{{pos}}</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+    </tr> 
+    {{/each}} 
+</tbody> 
+</table><br><br>
+
+<h4 style= "margin-bottom: 0em;">Team 2</h4>
+<table class="myTable">
+<thead> 
+    <th>First name</th> 
+    <th>Last name</th> 
+    <th>Team</th>
+    <th>Position(s)</th>
+    <th>PPG</th>
+    <th>RPG</th>
+    <th>APG</th>
+    <th>SPG</th>	
+    <th>BPG</th>
+    <th>TOPG</th>
+    <th>FPPG</th>
+</thead> 
+<tbody id="table2"> 
+    {{#each team2}} 
+    <tr> 
+	<td style="display:none;">{{playerId}}</td>
+        <td>{{fname}}</td> 
+        <td>{{lname}}</td> 
+        <td>{{team_name}}</td> 
+        <td>{{pos}}</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+    </tr> 
+    {{/each}} 
+</tbody> 
+</table>
+
+<script type="text/javascript">
+
+var table1 = document.getElementById("table1"); 
+var table2 = document.getElementById("table2"); 
+
+var tabary = [table1, table2];
+
+
+for (var j = 0; j < 2; j++) {
+
+	for (var i = 0; i < tabary[j].rows.length; i++) {
+		var row = tabary[j].rows[i];
+
+		(function (i, row) {
+
+		var playerId = "&playerId="+row.firstElementChild.innerHTML;
+
+		var req = new XMLHttpRequest(); 
+		var url1 = "http://data.nba.net/prod/v1/2017/players/";
+		var url2 = "_profile.json"; 
+	
+		req.open('GET', "/matchup/update?" + playerId , true); 
+		req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+		req.addEventListener('load', function() {
+			if (req.status >= 200 && req.status < 400) {
+				var response = JSON.parse(req.responseText); 
+				addData(response, i, row); 
+				 
+			}
+			else {
+				console.log("Error in request"); 
+			} 
+		});
+		req.send(null); 
+		})(i, row);
+
+	}
+
+	addCells(tabary[j].parentNode); 
+
+}
+ 
+
+
+function addData(response, i, row) {
+	var leagueName; 
+	for (var x in response.league) {
+		// Using career stats during offseason because API is getting updated.
+
+		//This code works fine during the regular season.
+		// var ppg = +response.league.standard.stats... 
+		
+		var ppg = +response.league[x].stats.careerSummary.ppg;
+		var rpg = +response.league[x].stats.careerSummary.rpg;
+		var apg = +response.league[x].stats.careerSummary.apg;
+		var spg = +response.league[x].stats.careerSummary.spg;
+		var bpg = +response.league[x].stats.careerSummary.bpg;
+		//var topg = +response.league[x].stats.careerSummary.topg;
+		var tpm = +response.league[x].stats.careerSummary.tpm;
+		var gp = +response.league[x].stats.careerSummary.gamesPlayed;
+		var turnovers = +response.league[x].stats.careerSummary.turnovers;
+		var topg = turnovers / gp; 
+		topg = Math.round(topg * 10) / 10; 
+		tpm = tpm / gp; 
+		var dd2 = +response.league[x].stats.careerSummary.dd2;
+		var td3 = +response.league[x].stats.careerSummary.td3;
+		dd2 = dd2 / gp; 
+		td3 = td3 / gp; 
+		var fppg = ppg + 1.25*rpg + 1.5*apg + 2*spg + 2*bpg - 0.5*topg + 0.5*tpm + 1.5*dd2 + 3 * td3; 
+		fppg = Math.round( fppg * 10 ) / 10;
+
+
+		addText(row, ppg, rpg, apg, spg, bpg, topg, tpm, dd2, td3, fppg); 
+	}		
+}
+
+function addText(row, ppg, rpg, apg, spg, bpg, topg, tpm, dd2, td3, fppg) {
+
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ppg; 
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = rpg;
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = apg;  
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = spg;  	
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = bpg; 
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = topg; 
+	row.firstElementChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = fppg; 
+
+	var tr = row; 
+	var newtd = document.createElement("td"); 
+	//row.appendChild(newtd); 	
+	var dd = document.createElement("select"); 
+	for (var i = 0; i < 5; i++) {
+		var opt = document.createElement("option"); 
+		opt.innerText = i; 	
+		opt.setAttribute("value", i); 
+		dd.appendChild(opt); 
+	}
+	dd.addEventListener("change", updatePlayerTotal); 
+	newtd.appendChild(dd); 
+	row.appendChild(newtd); 
+	
+	/*
+
+		for (var i = 0; i < 1; i++) {
+			var newtd = document.createElement("td"); 
+			tr.appendChild(newtd); 	
+			var cb = document.createElement("input"); 
+			cb.setAttribute("type", "checkbox"); 
+			cb.setAttribute("value", fppg); 
+			cb.setAttribute("id", pid); 
+			//cb.style.display = "none"; 
+
+			cb.addEventListener("change", function () {
+				if (document.getElementById("total")) {
+					var total = this.parentNode.parentNode.lastChild; 
+					var sum = +total.innerText;
+					var teamTotal = this.parentNode.parentNode.parentNode.lastChild.lastChild;	
+					var teamSum = +this.parentNode.parentNode.parentNode.lastChild.lastChild.innerHTML;
+
+					if (this.checked) {
+						sum = sum + +this.value; 
+						teamSum = teamSum + +this.value; 
+					}
+					else {
+						sum = sum - +this.value;
+						teamSum = teamSum - +this.value; 
+					}
+
+					sum = Math.round( sum * 10 ) / 10;
+					total.innerText = sum; 
+					teamSum = Math.round( teamSum * 10 ) / 10;
+					teamTotal.innerText = teamSum; 
+
+
+				}
+			});			
+				
+			newtd.appendChild(cb); 
+
+		}*/
+
+		var total = document.createElement("td");	
+		total.innerText = "0";
+		total.id = "total";  
+		tr.appendChild(total); 
+
+}
+
+function addCells(tbl) {
+	var tr = tbl.firstElementChild.firstElementChild;
+
+	var th = document.createElement("th");
+	th.innerText = "# Games"; 
+	tr.appendChild(th);  
+
+/*	var th = document.createElement("th");
+	th.innerText = "T"; 
+	tr.appendChild(th); 
+
+	var th = document.createElement("th");
+	th.innerText = "W"; 
+	tr.appendChild(th); 
+
+	var th = document.createElement("th");
+	th.innerText = "T"; 
+	tr.appendChild(th); 
+
+	var th = document.createElement("th");
+	th.innerText = "F"; 
+	tr.appendChild(th); 
+
+	var th = document.createElement("th");
+	th.innerText = "S"; 
+	tr.appendChild(th); 
+
+	var th = document.createElement("th");
+	th.innerText = "S"; 
+	tr.appendChild(th); */
+
+	var th = document.createElement("th");
+	th.innerText = "Total"; 
+	tr.appendChild(th); 
+
+
+	tr = tr.parentNode.nextSibling.nextSibling.firstElementChild; 
+
+
+	var tbdy = tbl.firstElementChild.nextSibling.nextSibling; 
+
+
+	var finalRow = document.createElement("tr");  
+
+	for (var i = 0; i < 11; i++) {
+		var tmp = document.createElement("td"); 
+		finalRow.appendChild(tmp); 	
+			
+	}
+
+	var totalstr = document.createElement("td"); 
+	totalstr.innerText = "Total"; 
+	finalRow.appendChild(totalstr); 
+
+	var totalnum = document.createElement("td"); 
+	totalnum.innerText = 0; 
+	finalRow.appendChild(totalnum); 
+
+	tbdy.appendChild(finalRow); 
+
+	
+}
+
+function updateLeagues () {
+	
+	var changeleague = document.getElementById('changeleague'); 
+	changeleague.addEventListener('change', function(event) {
+
+		var req = new XMLHttpRequest(); 
+		var id = changeleague.options[changeleague.selectedIndex].value; 
+
+		var parameters = "id="+id; 
+		req.open("GET", "/matchup/change?" + parameters, true); 
+		req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+		req.addEventListener('load', function () {
+			if (req.status >= 200 && req.status < 400) {
+				var response = JSON.parse(req.responseText); 
+
+				var myFieldset = document.getElementById("myFieldset"); 
+				var changeleague = document.getElementById('changeleague'); 
+
+				var team1 = document.getElementById("team1"); 
+				var team2 = document.getElementById("team2"); 
+
+				while (team1.firstChild) {
+					team1.removeChild(team1.firstChild); 
+					team2.removeChild(team2.firstChild); 
+				}
+					
+				for (var i = 0; i < response.options.length; i++) {
+					var opt = document.createElement('option'); 
+					opt.value = response.options[i].id;
+					opt.textContent = response.options[i].name; 
+					opt.innerHTML = response.options[i].name; 
+					team1.appendChild(opt); 
+					
+					var opt = document.createElement('option'); 
+					opt.value = response.options[i].id;
+					opt.textContent = response.options[i].name; 
+					opt.innerHTML = response.options[i].name; 
+					team2.appendChild(opt); 
+					
+				}
+			}
+			else {
+				console.log('Error in network request:' + request.responseText); 
+			}
+		});
+	req.send(null); 
+	event.preventDefault(); 
+	
+	}); 
+
+}
+
+function updatePlayerTotal() {
+	var playerTotal = +this.parentNode.nextSibling.innerHTML;
+	var numGames = this.value; 
+	var fppg = +this.parentNode.previousElementSibling.innerHTML;  
+	playerTotal = fppg * numGames; 
+	playerTotal = Math.round( playerTotal * 10 ) / 10;
+	this.parentNode.nextSibling.innerHTML = playerTotal;
+	updateTeamTotal(this.parentNode.parentNode.parentNode); 
+}
+
+function updateTeamTotal(tbdy) {
+	var teamTotal = 0;
+	for (var i = 0; i < tbdy.rows.length; i++) {
+		if (i < tbdy.rows.length - 1 && +tbdy.rows[i].lastChild.innerHTML > 0) {
+			console.log(tbdy.rows[i].lastChild.innerHTML);
+			teamTotal += +tbdy.rows[i].lastChild.innerHTML; 
+		}
+		else if (i == tbdy.rows.length - 1){
+			console.log(teamTotal); 
+			teamTotal = Math.round(teamTotal * 10) / 10; 
+			tbdy.rows[i].lastChild.innerHTML = teamTotal; 
+		}
+	}
+
+
+}
+
+updateLeagues(); 
+
+ 
+</script>
+
+
+
+
