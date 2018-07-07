@@ -1,3 +1,10 @@
+#Security
+dbcon.js
+
+# Temp files
+*~
+
+
 # Logs
 logs
 *.log

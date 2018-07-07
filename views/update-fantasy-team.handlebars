@@ -1,31 +1,49 @@
-<h4 style= "margin-bottom: 0em;">Change team name:</h4>
-<form id="update-fantasy-team" action="/teams" method="post">
-    Team name: <input type="text" name="name" value="{{team.name}}">
+<h4 hidden="hidden" id="changeTeamh4" style= "margin-bottom: 0em;">Change team name:</h4>
+<form class="form2" id="update-fantasy-team" action="/teams" method="post">
+    <label>Team name:</label> <input type="text" name="name" value="{{team.name}}">
 	<button onclick="updateFantasyTeam({{team.id}})">Update</button><br>
+</form><br>
+
+<h4 hidden="hidden" id="addPlayerh4" style= "margin-bottom: 0em; margin-top:30px">Add a player:</h4>
+
+
+<form class="form2" hidden="hidden" id="chooseTeams">
+<fieldset style="margin-top: -10px" id="myFieldset">
+<label>Team:</label> <select style="width:150px" name="team" id="changeteam">
+	<option disabled selected value> -- Select a team -- </option>
+	{{#each teams}}
+	<option value="{{teamId}}">{{name}}</option>
+	{{/each}}
+	</select><br>
+<label>Player:</label> <select style="width:150px" name="player" id="player">
+    <option disabled selected value> -- Select a team -- </option>
+</select><br>
+<input type="submit" value="Add">
+</fieldset>
 </form>
 
-<h4 style= "margin-bottom: 0em;">Add a player:</h4>
 
-<form id="searchplayer">
+<form style="margin-left:300px; margin-top:-2px" class="form2" hidden="hidden" id="searchplayer">
 <fieldset id="myFieldset">
-	Search by last name: <input type="text" name="searchname" id="searchname">
+	<label>Search by first or last name:</label> <input style="width:150px" type="text" name="searchname" id="searchname">
 	<input type="hidden" value="{{team.id}}" name="searchteam" id="searchteam">
 	<input type="submit" value="Search">
 </fieldset>
 </form>
 
+
 <div id="myDiv">
 </div>
 
-<h4 style= "margin-bottom: 0em; margin-top: 0em;">Roster:</h4>
-<table class="myTable" id="{{team.id}}">
+<h4 id="rosterH4" style= "margin-bottom: 0em; margin-top: 100px;">Roster:</h4>
+<table style="margin-top: 10px" class="myTable" id="{{team.id}}" name="rosterTable">
 <thead> 
     <th>First name</th> 
     <th>Last name</th> 
     <th>Team</th>
     <th>Position(s)</th>
 </thead> 
-<tbody> 
+<tbody name="rosterBody"> 
     {{#each players}} 
     <tr> 
 	<td style="display:none;">{{playerId}}</td>
@@ -33,248 +51,18 @@
         <td>{{lname}}</td> 
         <td>{{team_name}}</td> 
         <td>{{pos}}</td>
-	<td><button value="{{playerId}}">Remove</button></td>
+	<td><button hidden="hidden" class="removeButtons" value="{{playerId}}">Remove</button></td>
     </tr> 
     {{/each}} 
 </tbody> 
 </table>
 
+<input hidden="hidden" value="{{username}}" id="username">
+<input hidden="hidden" value="{{team.owner}}" id="owner">
+<input hidden="hidden" value="{{fantasyId}}" id="fantasyId">
+
 
 <script defer>selectLocation({{team.location}});</script>
 <script defer>selectCoach({{team.coach}});</script>
 
-<script>
 
-function makeButtons() {
-
-var buttons = document.getElementsByTagName('button');
-
-
-
-for (var i = 1; i < buttons.length; i++) {
-	(function(i){
-
-
-		buttons[i].addEventListener('click', function(event) {
-
-
-			var req = new XMLHttpRequest(); 
-
-			
-			if (!document.getElementById("playerTable")) {
-				console.log("look out1");
-				var fantasyId = document.getElementsByTagName("table")[1].id; 
-				var parameters = "playerId="+this.value+"&fantasyId="+fantasyId;
-			}
-			else {
-				console.log("look out2");
-
-				var fantasyId = document.getElementsByTagName("table")[2].id; 
-				var parameters = "playerId="+this.value+"&fantasyId="+fantasyId;
-			}
-			
-			var thisRow = this.parentNode.parentNode; 
-			thisRow.parentNode.removeChild(thisRow); 
-
-			req.open("GET", "/remove?" + parameters, true); 
-			req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-			req.addEventListener('load', function () {
-				if (req.status >= 200 && req.status < 400) {
-					var response = JSON.parse(req.responseText); 
-
-				}
-				else {
-					console.log("Error"); 
-				}
-			}); 
-		req.send(null); 
-		event.preventDefault(); 
-	}); })(i); 
-	
-}
-}
-
-makeButtons(); 
-
-document.getElementById("searchplayer").addEventListener('submit', function(event) {
-
-			var req = new XMLHttpRequest(); 
-			var name = document.getElementById("searchname"); 
-			//var id = buttons[i].value; 
-			var fantasyId = document.getElementsByTagName("table")[1].id; 
-			var parameters = "lname="+name.value+"&fantasyId="+fantasyId;
-			req.open("GET", "/search?" + parameters, true); 
-			req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-			req.addEventListener('load', function () {
-				if (req.status >= 200 && req.status < 400) {
-					var response = JSON.parse(req.responseText); 
-					var myDiv = document.getElementById("myDiv"); 
-
-					if(myDiv.firstChild) {
-						myDiv.removeChild(myDiv.firstChild); 
-					}
-
-					var tbl = document.createElement("table"); 
-					tbl.setAttribute("class", "myTable"); 
-					tbl.setAttribute("id", "playerTable"); 
-					var thead = document.createElement("thead"); 
-					var tbody = document.createElement("tbody"); 
-
-					var tr = document.createElement("tr");
-					var th = document.createElement("th"); 
-					th.innerText = "First name";
-					tr.appendChild(th); 
-
-					var th = document.createElement("th"); 
-					th.innerText = "Last name";
-					tr.appendChild(th); 
-
-					var th = document.createElement("th"); 
-					th.innerText = "Team";
-					tr.appendChild(th); 
-						
-					var th = document.createElement("th"); 
-					th.innerText = "Position(s)";
-					tr.appendChild(th);						 	
-					thead.appendChild(tr); 		
-					tbl.appendChild(thead); 
-
-					for (var i = 0; i < response.options.length; i++){
-						var tr = document.createElement("tr"); 
-						var td = document.createElement("td"); 
-						td.innerText = response.options[i].fname; 
-						tr.appendChild(td); 
-
-						var td = document.createElement("td"); 
-						td.innerText = response.options[i].lname; 
-						tr.appendChild(td); 
-
-						var td = document.createElement("td"); 
-						td.innerText = response.options[i].team_name; 
-						tr.appendChild(td); 
-
-						var td = document.createElement("td"); 
-						td.innerText = response.options[i].pos; 
-						tr.appendChild(td); 
-
-						var td = document.createElement("td"); 
-						var btn = document.createElement("button"); 
-						btn.innerText = "Add";
-						btn.value = response.options[i].playerId;
-
-						btn.addEventListener("click", function(event) {
-
-							var req = new XMLHttpRequest(); 
-
-
-
-							var parameters = "playerId="+this.value+"&teamId="+document.getElementById("searchteam").value; 
-
-							req.open("GET", "/add?" + parameters, true); 
-							req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-							req.addEventListener('load', function () {
-							if (req.status >= 200 && req.status < 400) {
-								var response = JSON.parse(req.responseText); 
-
-							
-								var tbody = document.getElementsByTagName("table")[2].firstChild.nextElementSibling.nextElementSibling;
-		
-								var tr = document.createElement("tr"); 
-								var td = document.createElement("td"); 
-								td.innerText = response.added[0].fname;
-								tr.appendChild(td); 
-
-								var td = document.createElement("td"); 
-								td.innerText = response.added[0].lname;
-								tr.appendChild(td); 
-
-								var td = document.createElement("td"); 
-								td.innerText = response.added[0].team_name;
-								tr.appendChild(td); 
-
-								var td = document.createElement("td"); 
-								td.innerText = response.added[0].pos;
-								tr.appendChild(td); 
-
-								var td = document.createElement("td"); 
-								var btn = document.createElement("button"); 
-								btn.innerText = "Remove"; 
-								btn.value = response.added[0].playerId;
-
-								btn.addEventListener("click", function(event) {
-
-								var req = new XMLHttpRequest(); 
-								//var id = buttons[i + document.getElementById("playerTable").rows.length - 1].value; 
-								var fantasyId = document.getElementsByTagName("table")[2].id; 
-								var parameters = "playerId="+this.value+"&fantasyId="+fantasyId;
-
-						
-
-
-
-							req.open("GET", "/remove?" + parameters, true); 
-							req.setRequestHeader('Content-Type', 'applicatthiion/x-www-form-urlencoded'); 
-							req.addEventListener('load', function () {
-								if (req.status >= 200 && req.status < 400) {
-									var response = JSON.parse(req.responseText);
-
-									 var deleterow = btn.parentNode.parentNode;
-									 deleterow.parentNode.removeChild(deleterow); 
-									 
-					
-								}
-								else {
-									console.log("Error"); 
-								}
-							}); 
-						req.send(null); 
-						event.preventDefault(); 
-					});
-
-								td.appendChild(btn); 
-								tr.appendChild(td); 
-
-
-								tbody.appendChild(tr); 
-								
-								
-
-
-
-							}
-							else { 
-								console.log('Error in network request:' + request.responseText); 
-							}
-
-						}); 
-
-							req.send(null); 
-							event.preventDefault(); 
-						}); 
-
-					
-
-						td.appendChild(btn); 
-						tr.appendChild(td); 
-
-						
-						tbody.appendChild(tr); 
-					}
-					
-					tbl.appendChild(tbody); 
-
-					myDiv.appendChild(tbl); 
-					
-				}
-
-				else {
-					console.log("Error"); 
-				}
-			}); 
-		req.send(null); 
-		event.preventDefault();
-}); 
-
- 
-
-</script>

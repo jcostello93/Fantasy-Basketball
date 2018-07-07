@@ -1,16 +1,80 @@
-table.myTable {
+table.myTable2 {
+  margin-top: 100px;
+  margin-right: 50px;
+  vertical-align: top;  
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;
-  width: 100%;
+  width: 70%;
+  max-height: 100%;
   text-align: left;
   border-collapse: collapse;
+  margin-bottom: 10px; 
+}
+table.myTable2 td, table.myTable th {
+  border: 1px solid #AAAAAA;
+}
+table.myTable2 tbody td {
+  font-size: 11px;
+}
+table.myTable2 tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.myTable2 thead {
+  background: #1C6EA4;
+
+  border-bottom: 2px solid #444444;
+}
+table.myTable2 thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #FFFFFF;
+  border-left: 2px solid #D0E4F5;
+}
+table.myTable2 thead th:first-child {
+  border-left: none;
+}
+
+table.myTable2 tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: #D0E4F5;
+  background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  border-top: 2px solid #444444;
+}
+table.myTable2 tfoot td {
+  font-size: 14px;
+}
+table.myTable2 tfoot .links {
+  text-align: right;
+}
+table.myTable2 tfoot .links a{
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+table.myTable {
+  margin-top: 25px;
+  margin-right: 50px;
+  vertical-align: top;  
+  border: 1px solid #1C6EA4;
+  background-color: #EEEEEE;
+  width: 40%;
+  max-height: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  margin-bottom: 10px; 
 }
 table.myTable td, table.myTable th {
   border: 1px solid #AAAAAA;
-  padding: 3px 2px;
 }
 table.myTable tbody td {
-  font-size: 13px;
+  font-size: 11px;
 }
 table.myTable tr:nth-child(even) {
   background: #D0E4F5;
@@ -30,12 +94,33 @@ table.myTable thead th:first-child {
   border-left: none;
 }
 
-
+table.myTable tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: #D0E4F5;
+  background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  border-top: 2px solid #444444;
+}
+table.myTable tfoot td {
+  font-size: 14px;
+}
+table.myTable tfoot .links {
+  text-align: right;
+}
+table.myTable tfoot .links a{
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
 
 #chooseTeams {
     margin:10px auto;
     max-width: 400px;
-    padding: 20px 12px 10px 20px;
 
 
 }
@@ -50,9 +135,47 @@ fieldset {
     border: 0;
 }
 
-body
+html, body
 {
+	margin: 0;
 	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+	height:100%;
+	width:100%;
+}
+
+img {
+	height: 40%;
+	width: 100%;
+	
+}
+
+form {
+	display: inline;
+}
+
+
+#smallImg{
+    /* float: left; */
+    height: 90px;
+    width: 70%;
+    /* margin-bottom: 25px; */
+    margin-left: 18px;
+}
+
+#bodyDiv {
+	max-width: 100%;
+	height: auto;
+}
+
+body {
+	float: right; 
+}
+
+#regularDiv{
+	float: left;
+	min-height:100%;
+	width:150px;
+	background-color: #EEEEEE;
 }
 
 #playerTable {
@@ -62,3 +185,106 @@ body
 #myDiv {
     padding: 0px 12px 10px 20px;
 }
+
+#header {
+	float: left;
+	height: 100%;
+	max-width: 100%;
+}
+
+#loginDiv {
+	max-width: 90%;
+	text-align: center;
+	margin-left: 65px;
+
+}
+.menuLinks {
+	display:block;
+	margin-left: 20px;
+	margin-right: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.form1 {
+    margin-left: -50px;
+    float: left;
+    text-align: right;
+    padding: 30px;
+    font-size: 13px;
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+
+}
+
+.form2 {
+    float: left;
+    text-align: right;
+    font-size: 13px;
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+.form3 {   
+    text-align: right;
+    font-size: 13px;
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+a{
+  color:#1C6EA4;
+}
+
+select {
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+	font-Size: 11px;
+}
+
+.myMessage{
+	float: left;
+    margin-top: 60px;
+    margin-left: -10px;
+}
+
+#loginSpan{
+	margin-right:50px;
+}
+
+.tooltip {
+  position: relative;
+ /* display: inline-block;*/
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #EEEEEE;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+

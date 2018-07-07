@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS `fantasy_players`;
 DROP TABLE IF EXISTS `coaches`;
 DROP TABLE IF EXISTS `locations`;
 DROP TABLE IF EXISTS `leagues`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `users_leagues`;
 
 
 CREATE TABLE players (
@@ -27,8 +29,12 @@ CREATE TABLE fantasy_teams (
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(255),
 	league INT,
+	owner VARCHAR(255),
 	FOREIGN KEY (league) REFERENCES leagues(id)
+		ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (owner) REFERENCES users(username)
 		ON DELETE SET NULL ON UPDATE CASCADE
+		
 );
 
 CREATE TABLE fantasy_players (
@@ -49,7 +55,11 @@ CREATE TABLE teams (
 
 CREATE TABLE leagues (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	name VARCHAR(255)
+	name VARCHAR(255),
+	publicKey INT NULL,
+	admin VARCHAR(255), 
+	FOREIGN KEY (admin) REFERENCES users(username)
+		ON DELETE SET NULL ON UPDATE CASCADE 
 );
 
 CREATE TABLE positions (
@@ -57,7 +67,25 @@ CREATE TABLE positions (
     name VARCHAR(255)
 );
 
-INSERT INTO leagues(name) VALUES ('Our League');
+CREATE TABLE users (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	username VARCHAR(255) UNIQUE,
+	passwordHash VARCHAR(255), 
+	salt VARCHAR(255),
+	email VARCHAR(255) NULL
+);
+
+CREATE TABLE users_leagues (
+	id INT AUTO_INCREMENT PRIMARY KEY, 
+	userId INT, 
+	leagueId INT,
+	FOREIGN KEY (leagueId) REFERENCES leagues(id)
+		ON DELETE SET NULL ON UPDATE CASCADE,
+	FOREIGN KEY (userID) REFERENCES users(id)
+		ON DELETE SET NULL ON UPDATE CASCADE	
+);
+
+--INSERT INTO leagues(name) VALUES ('Our League');
 
 INSERT INTO positions(name) VALUES('G'); 
 INSERT INTO positions(name) VALUES('G-F');
@@ -97,6 +125,7 @@ INSERT INTO teams(teamId,name) VALUES (1610612761,'Raptors');
 INSERT INTO teams(teamId,name) VALUES (1610612762,'Jazz');
 INSERT INTO teams(teamId,name) VALUES (1610612764,'Wizards');
 
+/*
 INSERT INTO fantasy_teams(name,league) VALUES ('JC',1);
 INSERT INTO fantasy_teams(name,league) VALUES ('EL',1);
 INSERT INTO fantasy_teams(name,league) VALUES ('RF',1);
@@ -281,6 +310,8 @@ INSERT INTO fantasy_players(playerId,teamId) VALUES ('1626159',10);
 INSERT INTO fantasy_players(playerId,teamId) VALUES ('201939',10);
 INSERT INTO fantasy_players(playerId,teamId) VALUES ('201144',10);
 INSERT INTO fantasy_players(playerId,teamId) VALUES ('201976',10);
+
+*/
 
 
 

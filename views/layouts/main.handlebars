@@ -1,26 +1,32 @@
 <!doctype html>
 <html>
 <head>
-	<title>Fantasy Basketball Weekly Projections</title>
+	<title>fantasyproject.me</title>
   	<link rel="stylesheet" type="text/css" href="/style.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     {{#each jsscripts}}
     <script src="/static/{{this}}"></script>
     {{/each}}
 </head>
+{{#if homepage}}
+{{else}}
+	<div id="regularDiv">
+		<img id="smallImg" src="/smallheader.png">
+		<br>
+		<a class="menuLinks" href="/leagues">My Leagues</a>
+		<a class="menuLinks" href="/fantasy-teams">My Teams</a>
+		<a class="menuLinks" href="/matchup">Matchup</a>
+	</div>
+{{/if}}
 <body>
-  <div id="header">
-      <img src="/header.png" width="100%" height="5%"/>
-  </div>
-  <table class="myTable">
-      <thead>
-        <th style="text-align:center"><a href="/leagues" style="color:#FFFFFF">Leagues</a></th>
-        <th style="text-align:center"><a href="/fantasy-teams" style="color:#FFFFFF">Teams</a></th>
-        <th style="text-align:center"><a href="/players" style="color:#FFFFFF">Players</a></th>
-        <th style="text-align:center"><a href="/matchup" style="color:#FFFFFF">Matchup</a></th>
-      </thead>
-  </table>
-
-	{{{body}}}
+	<div hidden="hidden" id="loginDiv"></div>
+	<input hidden="hidden" value="{{homepage}}" id="homepage">	
+	<div hidden="hidden" style="margin-left:220px" id="bodyDiv">	{{{body}}} </div>	
 </body>
+
+
+<script src="/login.js"></script>
 </html>
+
+
+

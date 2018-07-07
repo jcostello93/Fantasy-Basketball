@@ -1,0 +1,27 @@
+<br>
+<h4>{{teams.0.league_name}}</h4>
+<br>
+
+<table class="myTable2">
+<thead> 
+    <th>Fantasy team</th> 
+    <th>League</th>
+	<th>Owner</th>
+</thead> 
+<tbody> 
+    {{#each teams}} 
+    <tr> 
+        <td><a href="/fantasy-teams/{{team_id}}">{{team_name}}</td> 
+		<td>{{league_name}}</td>
+		<td>{{owner}}</td>
+		{{#if ../leagueAdmin}}
+			<td><button class="deleteButtons" value={{team_id}}>Remove</button></td>
+		{{/if}}
+    </tr> 
+    {{/each}} 
+</tbody> 
+</table>
+
+
+
+

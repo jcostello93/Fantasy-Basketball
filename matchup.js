@@ -1,6 +1,13 @@
 module.exports = function(){
-    var express = require('express');
-    var router = express.Router();
+    const express = require('express');
+    const router = express.Router();
+	
+	function isLoggedIn(req) {
+		if (!req.session.username) {
+			return 0;
+		}
+		return 1; 
+	}
 
     function getTeams(res, mysql, context, complete){
         mysql.pool.query("SELECT id, name FROM fantasy_teams", function(error, results, fields){
@@ -13,8 +20,10 @@ module.exports = function(){
         });
     }
 
-    function getLeagues(res, mysql, context, complete){
-        mysql.pool.query("SELECT id, name FROM leagues", function(error, results, fields){
+    function getLeagues(res, mysql, context, complete, req){
+        var sql = "SELECT leagues.id, leagues.name FROM users_leagues INNER JOIN users ON users.id = users_leagues.userId INNER JOIN leagues ON leagues.id = users_leagues.leagueId WHERE users.username = ?"; 
+		var inserts = [req.session.username]; 
+		mysql.pool.query(sql, inserts, function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
@@ -78,68 +87,120 @@ module.exports = function(){
             }
             context.player = results[0];
             complete();
-        }); }
+        }); 
+	}
 
+    function getMatchup(res, mysql, context, teamId, num, callback) {
+        var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos, fantasy_teams.name AS fteam FROM players INNER JOIN fantasy_players ON fantasy_players.playerId = players.playerId INNER JOIN fantasy_teams ON fantasy_teams.id = fantasy_players.teamId INNER JOIN teams ON teams.teamId = players.teamId WHERE fantasy_teams.id = ?";
+        var inserts = [teamId];
+        mysql.pool.query(sql, inserts, function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            if (num == 1) {
+                context.team1 = results;
+            }
+            else {
+                context.team2 = results;
+            }
+            callback();
+        });
 
-    function getMatchup(res, mysql, context, team1, team2, complete){
-        var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos FROM players INNER JOIN fantasy_players ON fantasy_players.playerId = players.playerId INNER JOIN fantasy_teams ON fantasy_teams.id = fantasy_players.teamId INNER JOIN teams ON teams.teamId = players.teamId WHERE fantasy_teams.id = ?";
+    }
+
+    function callAPI(req, res, mysql, context, i, playerId, num, complete) {
+        var url1 = "http://data.nba.net/prod/v1/2017/players/";
+        var url2 = "_profile.json"; 
+        var request = require('request');
+        request(url1 + playerId + url2, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (num == 1) {
+                context.players1[i] = body; 
+            }
+            else {
+                context.players2[i] = body;
+            }
+            complete(); 
+          }
+        });
+
+    }
+
+    /*function getMatchup(res, mysql, context, team1, team2, complete){
+        var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos, fantasy_teams.name AS fteam FROM players INNER JOIN fantasy_players ON fantasy_players.playerId = players.playerId INNER JOIN fantasy_teams ON fantasy_teams.id = fantasy_players.teamId INNER JOIN teams ON teams.teamId = players.teamId WHERE fantasy_teams.id = ?";
         var inserts = [team1];
         mysql.pool.query(sql, inserts, function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
             }
-            context.team1 = results;
+            context.team = results;
+			/*if (results[0]) {
+				context.t1fteam = results[0].fteam;
+			}
+			
+			var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos, fantasy_teams.name AS fteam FROM players INNER JOIN fantasy_players ON fantasy_players.playerId = players.playerId INNER JOIN fantasy_teams ON fantasy_teams.id = fantasy_players.teamId INNER JOIN teams ON teams.teamId = players.teamId WHERE fantasy_teams.id = ?";
+			var inserts = [team2];
+			mysql.pool.query(sql, inserts, function(error, results, fields){
+				if(error){
+					res.write(JSON.stringify(error));
+					res.end();
+				}
+				context.team2 = results;
+				if (results[0]) {
+					context.t2fteam = results[0].fteam;
+				}
+				console.log(context);
+				complete(); 
+			});
         });
-
-        var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos FROM players INNER JOIN fantasy_players ON fantasy_players.playerId = players.playerId INNER JOIN fantasy_teams ON fantasy_teams.id = fantasy_players.teamId INNER JOIN teams ON teams.teamId = players.teamId WHERE fantasy_teams.id = ?";
-        var inserts = [team2];
-        mysql.pool.query(sql, inserts, function(error, results, fields){
-            if(error){
-                res.write(JSON.stringify(error));
-                res.end();
-            }
-            context.team2 = results;
-	    complete(); 
-        });
-
-    }
+    }*/
 
 
     router.get('/', function(req, res){
-        var callbackCount = 0;
-        var context = {};
-        context.jsscripts = ["deleteplayer.js"];
-        var mysql = req.app.get('mysql');
-        getTeams(res, mysql, context, complete);
-        getLeagues(res, mysql, context, complete);
+		if (isLoggedIn(req) == 0) {
+			res.redirect('/'); 
+		}
+		else {
+			var callbackCount = 0;
+			var context = {};
+			context.jsscripts = ["deleteplayer.js", "matchup.js"];
+			var mysql = req.app.get('mysql');
+			getTeams(res, mysql, context, complete);
+			getLeagues(res, mysql, context, complete, req);
 
-        function complete(){
-            callbackCount++;
-            if(callbackCount >= 2){
-                res.render('matchup', context);
-            }
-
-        }
+			function complete(){
+				callbackCount++;
+				if(callbackCount >= 2){
+					res.render('matchup', context);
+				}
+			}
+		}
     });
 
     router.get('/change', function(req, res, next){ 
-	var mysql = req.app.get('mysql'); 
-	var context = {};
-	var sql = "SELECT id, name FROM fantasy_teams WHERE league = ?";
-	var inserts = [req.query.id];
-	sql = mysql.pool.query(sql, inserts, function(error, results, fields){
-		if (error) {
-			res.write(JSON.stringify(error)); 
-			res.status(400); 
-			res.end(); 
+		if (isLoggedIn(req) == 0) {
+			res.redirect('/'); 
 		}
 		else {
-			context.options = results;
-			res.send(context); 
-			res.status(202).end(); 
+			var mysql = req.app.get('mysql'); 
+			var context = {};
+			var sql = "SELECT id, name FROM fantasy_teams WHERE league = ?";
+			var inserts = [req.query.id];
+			sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+				if (error) {
+					res.write(JSON.stringify(error)); 
+					res.status(400); 
+					res.end(); 
+				}
+				else {
+					context.options = results;
+					res.send(context); 
+					res.status(202).end(); 
+				}
+			});
 		}
-	})
  
     });
 
@@ -149,15 +210,16 @@ module.exports = function(){
        var request = require('request');
         request(url1 + req.query.playerId + url2, function (error, response, body) {
           if (!error && response.statusCode == 200) {
+
             res.send(body); 
             res.status(202).end(); 
           }
-        })
-
-     
         });
 
-    router.get('/:playerId', function(req, res){
+     
+     });
+
+   /* router.get('/:playerId', function(req, res){
         callbackCount = 0;
         var context = {};
         context.jsscripts = ["selectteam.js", "updateplayer.js"];
@@ -171,26 +233,50 @@ module.exports = function(){
             }
 
         }
-    });
+    });*/
 
 
     router.post('/', function(req, res){
+       // console.log(req.body);
         callbackCount = 0;
         var context = {};
-        context.jsscripts = ["selectteam.js", "updateplayer.js"];
+        context.players1 = {};
+        context.players2 = {};
+        context.jsscripts = ["selectteam.js", "updateplayer.js", "matchup.js"];
         var mysql = req.app.get('mysql');
-        getMatchup(res, mysql, context, req.body.team1, req.body.team2, complete);
+        var responseObject = {};
+        getMatchup(res, mysql, context, req.body.team1, 1,  function () {
+            var i = 0;
+            while (i < context.team1.length) {
+                callAPI(req, res, mysql, context, i, context.team1[i].playerId, 1, complete);
+                i = i + 1; 
+            }
+        });
+        getMatchup(res, mysql, context, req.body.team2, 2, function () {
+            var i = 0;
+            while (i < context.team2.length) {
+                callAPI(req, res, mysql, context, i, context.team2[i].playerId, 2, complete);
+                i = i + 1; 
+            }
+        });
+       // getMatchup(res, mysql, context, req.body.team1, req.body.team2, complete);
         getTeams(res, mysql, context, complete);
-        getLeagues(res, mysql, context, complete);
+        getLeagues(res, mysql, context, complete, req);
         function complete(){
             callbackCount++;
-            if(callbackCount >= 3){
-                 res.render('matchup', context);
+            //console.log(callbackCount);
+            if (context.team1 && context.team2) {
+                if(callbackCount >= 2 + context.team1.length + context.team2.length){
+                    //console.log(context.players1); 
+                    //console.log(context.players2);
+                    res.send(context);
+                }
             }
         }
     });
 
-    router.post('/search', function(req, res){
+
+    /*router.post('/search', function(req, res){
         var callbackCount = 0;             
         var control = 0; 
         if (req.body.searchname) {
@@ -208,9 +294,9 @@ module.exports = function(){
             }
 
         }
-    });
+    });*/
 
-    router.put('/:playerId', function(req, res){
+    /*router.put('/:playerId', function(req, res){
         var mysql = req.app.get('mysql');
         var sql = "UPDATE players SET fname=?, lname=?, teamId=?, fantasy_team=?, pos=?, years=? WHERE playerId=?";
         if (req.body.team == ""){
@@ -242,7 +328,7 @@ module.exports = function(){
                 res.status(202).end();
             }
         })
-    })
+    })*/
 
     return router;
 }();

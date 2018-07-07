@@ -1,0 +1,8 @@
+<h4 style= "margin-bottom: 0em;">Change password for {{username}}:</h4>
+<form class="form2" id="update-league" action="/leagues" method="post">
+	<label>Old password:</label> <input name="oldPassword" type="password" id="oldPasswordText"><br>
+	<label>New password:</label> <input name="newPassword" type="password" id="newPasswordText"><br>
+	<label>Verify password:</label> <input name="verifyPassword" type="password" id="verifyPassword"><br>
+	<span id='message'></span>
+	<input type="submit" id="updatePasswordSubmit">
+</form>

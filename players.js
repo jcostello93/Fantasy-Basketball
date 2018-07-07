@@ -25,8 +25,8 @@ module.exports = function(){
         }); }
 
         if (control == 1) {
-            var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos, players.years FROM players INNER JOIN teams ON teams.teamId = players.teamId WHERE players.lname = ?";
-            var inserts = [req.body.searchname];
+            var sql = "SELECT players.playerId, players.fname, players.lname, teams.name AS team_name, players.pos, players.years FROM players INNER JOIN teams ON teams.teamId = players.teamId WHERE players.lname LIKE ?";
+            var inserts = ["%"+req.body.searchname+"%"];
             sql = mysql.pool.query(sql,inserts,function(error, results, fields){
                 if(error){
                     res.write(JSON.stringify(error));
@@ -66,7 +66,7 @@ module.exports = function(){
                 res.end();
             }
             context.player = results[0];
-	    console.log(context.player); 
+			console.log(context.player); 
             complete();
         });
     }
