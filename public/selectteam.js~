@@ -1,5 +1,0 @@
-function selectTeam(id){
-    $("#team-selector").val(id);
-    $("#filterteam").val(id);
-    
-}
