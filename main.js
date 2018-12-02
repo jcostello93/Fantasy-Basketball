@@ -48,7 +48,7 @@ app.use(session({
 }));;
 
 
-
+// Have to refactor this 
 app.use('/players', require('./players.js'));
 app.use('/teams', require('./teams.js'));
 app.use('/leagues', require('./leaguesServer.js'));
